@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # Logs
 logs
 *.log
@@ -109,9 +108,7 @@ dist
 
 #deploy
 /bin
-=======
 bin
 *.tf
 .idea/*
 .DS_Store
->>>>>>> Stashed changes
