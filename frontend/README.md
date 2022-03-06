@@ -1,4 +1,4 @@
-### Validiac frontend
+### ValidIaC frontend
 
 ### Development
 
