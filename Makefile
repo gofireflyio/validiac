@@ -6,6 +6,7 @@ INFRACOST_VERSION := 0.9.19
 TFSEC_VERSION := 1.5.0
 INFRAMAP_VERSION := 0.6.7
 TFLINT_EXEC := $(BIN_DIR)/tflint-$(TFLINT_VERSION)
+TFLINT_CONFIG = $(shell pwd)/backend/.tflint.hcl
 TFSEC_EXEC := $(BIN_DIR)/tfsec-$(TFSEC_VERSION)
 INFRAMAP_EXEC := $(BIN_DIR)/inframap-$(INFRAMAP_VERSION)
 INFRACOST_EXEC := $(BIN_DIR)/infracost-$(INFRACOST_VERSION)
@@ -31,6 +32,9 @@ endif
 $(TFLINT_EXEC): check
 	$(shell wget -O- https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/tflint_${UNAME_S}_amd64.zip | funzip > ${TFLINT_EXEC})
 	@chmod +x ${TFLINT_EXEC}
+	cp ${TFLINT_CONFIG} $(BIN_DIR)
+	${TFLINT_EXEC} --init -c ${TFLINT_CONFIG}
+
 
 $(TFSEC_EXEC): check
 	$(shell wget -O- https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VERSION}/tfsec-${UNAME_S}-amd64 > ${TFSEC_EXEC})
@@ -48,13 +52,14 @@ $(INFRAMAP_EXEC): check
 deps: $(TFLINT_EXEC) $(TFSEC_EXEC) $(INFRACOST_EXEC) $(INFRAMAP_EXEC)
 
 test:
-	go test -ldflags "-X github.com/gofireflyio/validiac/backend/api.TFLintExec=${TFLINT_EXEC} -X github.com/gofireflyio/validiac/backend/api.TFSecExec=${TFSEC_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraMapExec=${INFRAMAP_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraCostExec=${INFRACOST_EXEC}" ./...
+	go clean -testcache
+	go test -ldflags "-X github.com/gofireflyio/validiac/backend/api.TFLintExec=${TFLINT_EXEC} -X github.com/gofireflyio/validiac/backend/api.TFSecExec=${TFSEC_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraMapExec=${INFRAMAP_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraCostExec=${INFRACOST_EXEC} -X github.com/gofireflyio/validiac/backend/api.TfLintConfig=${TFLINT_CONFIG}" ./...
 
 lint:
 	golangci-lint run ./...
 
 build:
-	CGO_ENABLED=0 go build -tags netgo -ldflags "-s -w -X github.com/gofireflyio/validiac/backend/api.TFLintExec=${TFLINT_EXEC} -X github.com/gofireflyio/validiac/backend/api.TFSecExec=${TFSEC_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraMapExec=${INFRAMAP_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraCostExec=${INFRACOST_EXEC}" -o ${BIN_DIR}/validiac backend/main.go
+	CGO_ENABLED=0 go build -tags netgo -ldflags "-s -w -X github.com/gofireflyio/validiac/backend/api.TFLintExec=${TFLINT_EXEC} -X github.com/gofireflyio/validiac/backend/api.TFSecExec=${TFSEC_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraMapExec=${INFRAMAP_EXEC} -X github.com/gofireflyio/validiac/backend/api.InfraCostExec=${INFRACOST_EXEC} -X github.com/gofireflyio/validiac/backend/api.TfLintConfig=${TFLINT_CONFIG}" -o ${BIN_DIR}/validiac backend/main.go
 
 docker:
 	docker build -t gofireflyio/validiac:latest .

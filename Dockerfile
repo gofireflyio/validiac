@@ -6,6 +6,7 @@ ENV GOOS=linux
 ENV GOARCH=amd64
 WORKDIR /validiac
 COPY go.mod go.sum Makefile ./
+COPY backend/.tflint.hcl backend/.tflint.hcl
 RUN go mod download
 RUN make -e deps
 COPY backend/ ./backend/
