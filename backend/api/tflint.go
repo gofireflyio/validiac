@@ -21,5 +21,5 @@ func TFLint(in []byte) ([]byte, error) {
 	}
 
 	defer os.Remove(path) // nolint: errcheck
-    return exec.Command(TFLintExec, path, "--no-color", "--force").CombinedOutput()
+    return exec.Command(TFLintExec, path, "--loglevel=debug", "--no-color", "--force").CombinedOutput()
 }
