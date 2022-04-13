@@ -55,14 +55,14 @@ func InfraMap(in []byte, opts InfraMapOpts) ([]byte, error) {
 		// put the output into a temporary file
 		graphPath, err := asTempFile("", "", out)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed creating temp file for png generation: %w", err)
 		}
 
 		defer os.Remove(graphPath) // nolint: errcheck
 
-		out, err = exec.Command("dot", "-Tpng", graphPath).CombinedOutput()
+		out, err = exec.Command("dot", "-Tpng", graphPath).Output()
 		if err != nil {
-			return nil, fmt.Errorf("dot failed: %s", string(out))
+			return nil, parseExitError(err, "dot failed")
 		}
 	}
 
