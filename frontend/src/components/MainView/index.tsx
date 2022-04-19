@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 import { callAPI } from "../../services/api-service";
 import MainViewHeader from "./MainViewHeader";
@@ -8,6 +8,7 @@ import {
 } from "./AboutThisProject";
 import ExistingHcl from "./iacBox/ExistingHcl";
 import ValidatorResults from "./iacBox/ValidatorResults";
+import FireflyPopup from "./FireflyPopup";
 
 const TextaresContainer = styled.div`
   display: grid;
@@ -38,6 +39,12 @@ const MainView: React.FC = () => {
   const [fetching, setFetching] = useState(false);
   const [err, setErr] = useState<any>();
   const [curTab, setCurTab] = useState<number>(0);
+  const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [initialTabClicked, setInitialTabClicked] = useState<boolean>(false);
+  const [popupStyle, setPopupStyle] = useState<Object>({
+      opacity: 0,
+      transition: "all 0.3s ease-in"
+    });
 
   const callApiCallabck = useCallback(
     (endpoint: string) => {
@@ -54,6 +61,31 @@ const MainView: React.FC = () => {
     },
     [existingHclTextArea]
   );
+
+  useEffect(() => {
+    if (initialTabClicked) {
+      setPopupOpen(true);
+    }
+  }, [initialTabClicked]);
+
+  useEffect(() => {
+    if (popupOpen) {
+      setPopupStyle({
+        opacity: 1,
+        transition: "all 0.3s ease-in"
+      });
+    } else {
+      setPopupStyle({
+        opacity: 0,
+        transition: "all 0.3s ease-in"
+      });
+    }
+    
+  }, [popupOpen]);
+
+  const handleClose = () => {
+    setPopupOpen(false);
+  };
 
   return (
     <>
@@ -73,12 +105,15 @@ const MainView: React.FC = () => {
             callApiCallabck={callApiCallabck}
             curTab={curTab}
             setCurTab={setCurTab}
+            setInitialTabClicked={setInitialTabClicked}
+            initialTabClicked={initialTabClicked}
           />
         </TextaresContainer>
         <BrOnlyOnPc />
       </MainViewBodyContainer>
       <AboutThisProjectHeader />
       <AboutThisProjectBottom />
+      <FireflyPopup onClose={handleClose} style={popupStyle} />
     </>
   );
 };
