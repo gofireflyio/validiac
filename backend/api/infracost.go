@@ -24,7 +24,6 @@ func InfraCost(in []byte) ([]byte, error) {
 		"breakdown",
 		"--path",
 		path,
-		"--terraform-parse-hcl",
 		"--no-color",
 		"--log-level=error",
 	)

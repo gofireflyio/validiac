@@ -2,9 +2,9 @@ BIN_DIR := $(shell pwd)/bin
 UNAME_M := $(shell uname -m)
 UNAME_S := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-TFLINT_VERSION := 0.34.1
-INFRACOST_VERSION := 0.9.19
-TFSEC_VERSION := 1.5.0
+TFLINT_VERSION := 0.38.1
+INFRACOST_VERSION := 0.10.6
+TFSEC_VERSION := 1.26.0
 INFRAMAP_VERSION := 0.6.7
 
 TFLINT_EXEC := $(BIN_DIR)/tflint
