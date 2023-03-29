@@ -13,7 +13,7 @@ RUN ls -lr ./
 RUN make -e build && make -e test
 RUN chmod +x ./bin/validiac
 
-FROM alpine:3.14
+FROM alpine:3.16
 RUN apk add -u ca-certificates git graphviz msttcorefonts-installer
 RUN update-ms-fonts && fc-cache -f
 COPY --from=0 /validiac/bin/* /validiac/bin/
